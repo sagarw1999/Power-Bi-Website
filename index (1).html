@@ -1,0 +1,1246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DataNova — Business Intelligence &amp; Data Analytics</title>
+<meta name="description" content="DataNova — Power BI Developer &amp; Business Intelligence Specialist. Premium dashboards, automated reporting systems and scalable analytics solutions.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* ============ TOKENS ============ */
+:root{
+  --black:#05070C;
+  --navy:#0A1120;
+  --space-blue:#0E1B38;
+  --azure:#2F6FED;
+  --cyan:#49D9E0;
+  --violet:#7C6EF6;
+  --white:#ECEFF6;
+  --muted:#8A93AC;
+  --muted-2:#5C6580;
+  --glass:rgba(236,239,246,0.05);
+  --glass-border:rgba(236,239,246,0.10);
+  --grad-accent:linear-gradient(120deg,var(--cyan),var(--azure) 55%,var(--violet));
+  --font-display:'Space Grotesk',sans-serif;
+  --font-body:'Inter',sans-serif;
+  --font-mono:'IBM Plex Mono',monospace;
+  --ease:cubic-bezier(.16,.8,.24,1);
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+@media (prefers-reduced-motion: reduce){
+  html{scroll-behavior:auto;}
+  *{animation-duration:.001ms !important;animation-iteration-count:1 !important;transition-duration:.001ms !important;}
+}
+body{
+  background:var(--black);
+  color:var(--white);
+  font-family:var(--font-body);
+  line-height:1.6;
+  overflow-x:hidden;
+  cursor:none;
+}
+@media (max-width:900px){ body{cursor:auto;} }
+img,canvas{display:block;max-width:100%;}
+a{color:inherit;text-decoration:none;}
+ul{list-style:none;}
+button{font-family:inherit;border:none;background:none;color:inherit;cursor:none;}
+@media (max-width:900px){ button{cursor:pointer;} }
+input,select,textarea{font-family:inherit;}
+:focus-visible{outline:2px solid var(--cyan);outline-offset:3px;border-radius:4px;}
+.container{width:100%;max-width:1240px;margin:0 auto;padding:0 32px;}
+@media (max-width:640px){.container{padding:0 20px;}}
+section{position:relative;padding:140px 0;}
+@media (max-width:900px){section{padding:96px 0;}}
+.eyebrow{
+  font-family:var(--font-mono);
+  font-size:12px;
+  letter-spacing:.18em;
+  text-transform:uppercase;
+  color:var(--cyan);
+  display:flex;align-items:center;gap:10px;
+  margin-bottom:18px;
+}
+.eyebrow::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--cyan);box-shadow:0 0 10px var(--cyan);}
+h1,h2,h3,h4{font-family:var(--font-display);font-weight:600;letter-spacing:-.01em;color:var(--white);}
+h2{font-size:clamp(28px,4vw,44px);}
+.section-head{max-width:640px;margin-bottom:64px;}
+.section-head p{color:var(--muted);font-size:16px;margin-top:14px;}
+.muted{color:var(--muted);}
+.mono{font-family:var(--font-mono);}
+
+/* Background node texture */
+.starfield{position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.5;}
+
+/* ============ CURSOR ============ */
+.cursor-dot,.cursor-ring{position:fixed;top:0;left:0;pointer-events:none;z-index:9999;border-radius:50%;transform:translate(-50%,-50%);}
+.cursor-dot{width:6px;height:6px;background:var(--cyan);box-shadow:0 0 8px var(--cyan);}
+.cursor-ring{width:34px;height:34px;border:1px solid rgba(236,239,246,.35);transition:width .25s var(--ease),height .25s var(--ease),border-color .25s var(--ease),background .25s var(--ease);}
+.cursor-ring::after{content:attr(data-label);position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:var(--font-mono);font-size:9px;letter-spacing:.08em;text-transform:uppercase;color:var(--white);opacity:0;transition:opacity .2s;}
+.cursor-ring.active{width:76px;height:76px;border-color:var(--cyan);background:rgba(73,217,224,.08);}
+.cursor-ring.active::after{opacity:1;}
+@media (max-width:900px){.cursor-dot,.cursor-ring{display:none;}}
+
+/* ============ NAV ============ */
+.nav{
+  position:fixed;top:0;left:0;right:0;z-index:1000;
+  padding:26px 0;
+  transition:all .45s var(--ease);
+}
+.nav-inner{
+  max-width:1240px;margin:0 auto;padding:0 32px;
+  display:flex;align-items:center;justify-content:space-between;
+  border-radius:100px;
+  transition:all .45s var(--ease);
+}
+.nav.scrolled .nav-inner{
+  max-width:920px;
+  padding:10px 12px 10px 24px;
+  background:rgba(10,17,32,.65);
+  border:1px solid var(--glass-border);
+  backdrop-filter:blur(20px);
+  box-shadow:0 10px 40px rgba(0,0,0,.35);
+}
+.logo{font-family:var(--font-display);font-weight:700;font-size:18px;letter-spacing:.02em;display:flex;align-items:center;gap:8px;}
+.logo-dot{width:7px;height:7px;border-radius:50%;background:var(--grad-accent);box-shadow:0 0 12px var(--cyan);}
+.nav-links{display:flex;gap:34px;font-size:14px;color:var(--muted);}
+.nav-links a{position:relative;padding:4px 0;transition:color .25s;}
+.nav-links a:hover,.nav-links a:focus-visible{color:var(--white);}
+.nav-links a::after{content:'';position:absolute;left:0;bottom:-2px;width:0;height:1px;background:var(--cyan);transition:width .3s var(--ease);}
+.nav-links a:hover::after{width:100%;}
+.nav-cta{
+  font-size:13px;font-weight:500;padding:11px 22px;border-radius:100px;
+  background:var(--grad-accent);color:var(--black);
+  box-shadow:0 0 24px rgba(73,217,224,.25);
+  transition:transform .25s var(--ease),box-shadow .25s;
+}
+.nav-cta:hover{transform:translateY(-2px);box-shadow:0 4px 30px rgba(73,217,224,.4);}
+.nav-toggle{display:none;}
+@media (max-width:900px){
+  .nav-links{display:none;}
+  .nav-toggle{display:block;}
+  .nav.scrolled .nav-inner{max-width:calc(100% - 32px);}
+}
+
+/* ============ HERO ============ */
+.hero{
+  min-height:100vh;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;
+  padding-top:140px;overflow:hidden;
+}
+#sphere-canvas{position:absolute;inset:0;z-index:0;}
+.hero-content{position:relative;z-index:2;max-width:820px;padding:0 24px;}
+.hero .eyebrow{justify-content:center;}
+.hero h1{font-size:clamp(34px,6.4vw,72px);line-height:1.08;margin-bottom:22px;}
+.hero h1 .grad{background:var(--grad-accent);-webkit-background-clip:text;background-clip:text;color:transparent;}
+.hero-sub{color:var(--muted);font-size:clamp(15px,1.5vw,18px);max-width:560px;margin:0 auto 38px;}
+.hero-ctas{display:flex;gap:16px;justify-content:center;flex-wrap:wrap;margin-bottom:44px;}
+.btn-primary,.btn-secondary{
+  padding:15px 30px;border-radius:100px;font-size:14.5px;font-weight:500;
+  transition:transform .25s var(--ease),box-shadow .25s,border-color .25s;
+  display:inline-flex;align-items:center;gap:8px;
+}
+.btn-primary{background:var(--grad-accent);color:var(--black);box-shadow:0 0 30px rgba(73,217,224,.22);}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 6px 34px rgba(73,217,224,.4);}
+.btn-secondary{border:1px solid var(--glass-border);color:var(--white);background:var(--glass);}
+.btn-secondary:hover{border-color:rgba(236,239,246,.4);transform:translateY(-2px);}
+.trust-line{font-family:var(--font-mono);font-size:12px;letter-spacing:.06em;color:var(--muted-2);margin-bottom:56px;}
+.hero-stats{display:grid;grid-template-columns:repeat(5,1fr);gap:20px;width:100%;max-width:920px;position:relative;z-index:2;}
+.stat{text-align:center;}
+.stat-num{font-family:var(--font-display);font-size:clamp(22px,3vw,34px);font-weight:700;background:var(--grad-accent);-webkit-background-clip:text;background-clip:text;color:transparent;}
+.stat-label{font-size:11.5px;color:var(--muted);margin-top:6px;letter-spacing:.02em;}
+@media (max-width:760px){.hero-stats{grid-template-columns:repeat(2,1fr);gap:28px 12px;}}
+.scroll-hint{position:absolute;bottom:34px;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:8px;color:var(--muted-2);font-family:var(--font-mono);font-size:10px;letter-spacing:.15em;z-index:2;}
+.scroll-hint span{width:1px;height:26px;background:linear-gradient(var(--cyan),transparent);animation:scrolldown 1.8s infinite;}
+@keyframes scrolldown{0%{opacity:0;transform:scaleY(0);}40%{opacity:1;transform:scaleY(1);}100%{opacity:0;transform:scaleY(1);}}
+
+.reveal{opacity:0;transform:translateY(28px);transition:opacity .8s var(--ease),transform .8s var(--ease);}
+.reveal.in{opacity:1;transform:translateY(0);}
+
+/* ============ ABOUT ============ */
+.about-grid{display:grid;grid-template-columns:.85fr 1.15fr;gap:64px;align-items:center;}
+@media (max-width:860px){.about-grid{grid-template-columns:1fr;gap:40px;}}
+.portrait{
+  position:relative;aspect-ratio:1/1;border-radius:28px;
+  background:radial-gradient(circle at 30% 20%,rgba(124,110,246,.25),transparent 60%),
+             radial-gradient(circle at 70% 80%,rgba(73,217,224,.2),transparent 60%),
+             var(--navy);
+  border:1px solid var(--glass-border);
+  display:flex;align-items:center;justify-content:center;overflow:hidden;
+}
+.portrait::before{
+  content:'';position:absolute;width:70%;height:70%;border-radius:50%;
+  background:conic-gradient(from 0deg,var(--cyan),var(--violet),var(--azure),var(--cyan));
+  filter:blur(40px);opacity:.35;animation:spin 12s linear infinite;
+}
+@keyframes spin{to{transform:rotate(360deg);}}
+.portrait-mark{position:relative;z-index:1;font-family:var(--font-display);font-size:64px;font-weight:700;color:rgba(236,239,246,.9);letter-spacing:-.02em;}
+.about-copy p{color:var(--muted);font-size:16.5px;margin-bottom:22px;max-width:520px;}
+.about-tags{display:flex;flex-wrap:wrap;gap:10px;margin-top:8px;}
+.about-tags span{font-family:var(--font-mono);font-size:11.5px;padding:7px 14px;border:1px solid var(--glass-border);border-radius:100px;color:var(--muted);}
+
+/* ============ SKILLS ============ */
+.skills-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;}
+@media (max-width:960px){.skills-grid{grid-template-columns:repeat(2,1fr);}}
+@media (max-width:520px){.skills-grid{grid-template-columns:1fr;}}
+.skill-card{
+  position:relative;padding:26px 22px;border-radius:18px;
+  background:var(--glass);border:1px solid var(--glass-border);
+  transform-style:preserve-3d;transition:border-color .3s,background .3s;
+  overflow:hidden;
+}
+.skill-card:hover{border-color:rgba(73,217,224,.35);background:rgba(73,217,224,.04);}
+.skill-card .glow{position:absolute;width:160px;height:160px;background:radial-gradient(circle,rgba(73,217,224,.25),transparent 70%);border-radius:50%;pointer-events:none;opacity:0;transition:opacity .3s;top:-40px;right:-40px;}
+.skill-card:hover .glow{opacity:1;}
+.skill-name{font-family:var(--font-display);font-size:17px;margin-bottom:10px;position:relative;z-index:1;}
+.skill-bar{height:3px;background:rgba(236,239,246,.08);border-radius:3px;overflow:hidden;margin-bottom:10px;position:relative;z-index:1;}
+.skill-bar span{display:block;height:100%;background:var(--grad-accent);width:0;transition:width 1.2s var(--ease);border-radius:3px;}
+.skill-card.in .skill-bar span{width:var(--pct);}
+.skill-desc{font-size:13px;color:var(--muted);max-height:0;opacity:0;overflow:hidden;transition:max-height .35s var(--ease),opacity .35s;position:relative;z-index:1;}
+.skill-card:hover .skill-desc{max-height:80px;opacity:1;}
+
+/* ============ PROJECTS ============ */
+.projects-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;}
+@media (max-width:1000px){.projects-grid{grid-template-columns:repeat(2,1fr);}}
+@media (max-width:640px){.projects-grid{grid-template-columns:1fr;}}
+.project-card{
+  border-radius:20px;border:1px solid var(--glass-border);background:var(--navy);
+  overflow:hidden;position:relative;transition:transform .4s var(--ease),border-color .4s;
+}
+.project-card:hover{transform:translateY(-6px);border-color:rgba(73,217,224,.35);}
+.project-mock{
+  height:170px;position:relative;overflow:hidden;
+  background:linear-gradient(160deg,var(--space-blue),var(--navy));
+  border-bottom:1px solid var(--glass-border);
+}
+.project-mock svg{position:absolute;inset:0;width:100%;height:100%;}
+.project-mock img{width:100%;height:100%;object-fit:cover;object-position:top;transition:transform .5s var(--ease);}
+.project-card:hover .project-mock img{transform:scale(1.05);}
+.live-badge{
+  position:absolute;top:12px;left:12px;z-index:2;display:flex;align-items:center;gap:6px;
+  padding:5px 11px;border-radius:100px;background:rgba(6,9,16,.7);border:1px solid rgba(73,217,224,.4);
+  font-family:var(--font-mono);font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--cyan);
+  backdrop-filter:blur(6px);
+}
+.live-badge .pulse{width:6px;height:6px;border-radius:50%;background:var(--cyan);box-shadow:0 0 8px var(--cyan);animation:pulse 1.6s infinite;}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:.3;}}
+.project-body{padding:22px;}
+.project-industry{font-family:var(--font-mono);font-size:10.5px;color:var(--cyan);letter-spacing:.1em;text-transform:uppercase;}
+.project-title{font-family:var(--font-display);font-size:19px;margin:8px 0 10px;}
+.project-stack{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px;}
+.project-stack span{font-size:10.5px;font-family:var(--font-mono);color:var(--muted);border:1px solid var(--glass-border);padding:4px 9px;border-radius:100px;}
+.view-dash-btn{
+  margin-top:4px;font-family:var(--font-mono);font-size:11.5px;letter-spacing:.05em;color:var(--cyan);
+  display:inline-flex;align-items:center;gap:6px;transition:gap .25s;
+}
+.view-dash-btn:hover{gap:10px;}
+.project-overlay{
+  position:absolute;inset:0;background:rgba(6,9,16,.94);
+  padding:24px;display:flex;flex-direction:column;justify-content:center;gap:10px;
+  opacity:0;transition:opacity .35s var(--ease);
+}
+.project-card:hover .project-overlay{opacity:1;}
+.project-overlay h4{font-size:12px;color:var(--cyan);font-family:var(--font-mono);letter-spacing:.06em;text-transform:uppercase;margin-top:6px;}
+.project-overlay p{font-size:13px;color:var(--muted);}
+.project-overlay .impact{color:var(--white);font-weight:600;}
+
+/* ============ DASHBOARD LIGHTBOX ============ */
+.dash-modal{
+  position:fixed;inset:0;z-index:2000;display:none;align-items:center;justify-content:center;
+  background:rgba(4,6,10,.88);backdrop-filter:blur(10px);padding:24px;
+}
+.dash-modal.open{display:flex;}
+.dash-modal-inner{
+  width:100%;max-width:1000px;max-height:88vh;background:var(--navy);border:1px solid var(--glass-border);
+  border-radius:20px;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 40px 100px rgba(0,0,0,.6);
+}
+.dash-modal-head{display:flex;justify-content:space-between;align-items:center;padding:16px 22px;border-bottom:1px solid var(--glass-border);}
+.dash-modal-head h3{font-size:16px;}
+.dash-modal-close{width:34px;height:34px;border-radius:50%;border:1px solid var(--glass-border);display:flex;align-items:center;justify-content:center;font-size:16px;transition:border-color .25s;}
+.dash-modal-close:hover{border-color:var(--cyan);color:var(--cyan);}
+.dash-modal-body{flex:1;overflow:auto;background:var(--black);display:flex;align-items:center;justify-content:center;min-height:300px;}
+.dash-modal-body img{width:100%;display:block;}
+.dash-modal-body iframe{width:100%;height:min(70vh,600px);border:0;}
+.dash-modal-empty{padding:60px 30px;text-align:center;color:var(--muted);font-size:14px;max-width:420px;}
+.dash-modal-empty .mono{display:block;margin-top:10px;font-size:11.5px;color:var(--muted-2);}
+
+/* ============ DASHBOARD SHOWCASE ============ */
+.laptop{
+  max-width:900px;margin:0 auto;position:relative;
+}
+.laptop-frame{
+  border-radius:16px 16px 4px 4px;background:linear-gradient(160deg,#12182b,#070a12);
+  border:1px solid var(--glass-border);padding:14px 14px 0;
+  box-shadow:0 40px 90px rgba(0,0,0,.55);
+}
+.laptop-screen{
+  aspect-ratio:16/9.6;border-radius:8px;overflow:hidden;background:var(--black);
+  position:relative;border:1px solid rgba(236,239,246,.06);
+}
+.laptop-base{height:16px;background:linear-gradient(180deg,#171d30,#0a0d16);border-radius:0 0 10px 10px;margin-top:4px;}
+.tabs{display:flex;gap:8px;justify-content:center;margin:36px 0 30px;flex-wrap:wrap;}
+.tab-btn{
+  font-family:var(--font-mono);font-size:12px;padding:9px 18px;border-radius:100px;
+  border:1px solid var(--glass-border);color:var(--muted);transition:all .25s;
+}
+.tab-btn.active,.tab-btn:hover{color:var(--black);background:var(--grad-accent);border-color:transparent;}
+.dash-header{display:flex;justify-content:space-between;align-items:center;padding:16px 20px;border-bottom:1px solid rgba(236,239,246,.06);}
+.dash-header .dot-row span{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--muted-2);margin-right:5px;}
+.dash-title{font-family:var(--font-mono);font-size:11px;color:var(--muted);letter-spacing:.06em;}
+.dash-body{display:grid;grid-template-columns:1.4fr 1fr;gap:14px;padding:16px 20px;}
+.dash-kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;grid-column:1/-1;}
+.kpi-mini{background:var(--glass);border:1px solid var(--glass-border);border-radius:10px;padding:10px 12px;}
+.kpi-mini .n{font-family:var(--font-display);font-size:18px;color:var(--white);}
+.kpi-mini .l{font-size:9.5px;color:var(--muted);font-family:var(--font-mono);text-transform:uppercase;letter-spacing:.05em;}
+.chart-box{background:var(--glass);border:1px solid var(--glass-border);border-radius:10px;padding:12px;min-height:130px;}
+.chart-box svg{width:100%;height:120px;overflow:visible;}
+@media (max-width:700px){.dash-body{grid-template-columns:1fr;}}
+
+/* ============ CASE STUDY ============ */
+.case-grid{display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:start;}
+@media (max-width:900px){.case-grid{grid-template-columns:1fr;gap:40px;}}
+.case-block{margin-bottom:26px;}
+.case-block h4{font-family:var(--font-mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--cyan);margin-bottom:8px;}
+.case-block p{color:var(--muted);font-size:15px;}
+.case-tools{display:flex;flex-wrap:wrap;gap:8px;}
+.case-tools span{font-size:11px;font-family:var(--font-mono);border:1px solid var(--glass-border);padding:5px 11px;border-radius:100px;color:var(--muted);}
+.case-kpis{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;}
+.case-kpi{padding:24px;border-radius:16px;background:var(--glass);border:1px solid var(--glass-border);text-align:center;}
+.case-kpi .n{font-family:var(--font-display);font-size:34px;font-weight:700;background:var(--grad-accent);-webkit-background-clip:text;background-clip:text;color:transparent;}
+.case-kpi .l{font-size:12px;color:var(--muted);margin-top:6px;}
+
+/* ============ TIMELINE ============ */
+.timeline{position:relative;padding-left:32px;border-left:1px solid var(--glass-border);max-width:760px;}
+.tl-item{position:relative;padding-bottom:52px;opacity:.35;transition:opacity .5s var(--ease);}
+.tl-item.in{opacity:1;}
+.tl-item:last-child{padding-bottom:0;}
+.tl-item::before{content:'';position:absolute;left:-38px;top:2px;width:11px;height:11px;border-radius:50%;background:var(--black);border:2px solid var(--muted-2);transition:all .4s var(--ease);}
+.tl-item.in::before{border-color:var(--cyan);box-shadow:0 0 12px var(--cyan);background:var(--cyan);}
+.tl-year{font-family:var(--font-mono);font-size:12px;color:var(--cyan);letter-spacing:.08em;}
+.tl-role{font-family:var(--font-display);font-size:21px;margin:6px 0 8px;}
+.tl-item p{color:var(--muted);font-size:15px;max-width:560px;}
+
+/* ============ WORKFLOW ORBIT ============ */
+.orbit-wrap{position:relative;display:flex;justify-content:center;align-items:center;min-height:560px;}
+.orbit-ring{position:absolute;border:1px solid var(--glass-border);border-radius:50%;}
+.orbit-ring.r1{width:420px;height:420px;}
+.orbit-ring.r2{width:600px;height:600px;opacity:.5;}
+.orbit-center{width:110px;height:110px;border-radius:50%;background:radial-gradient(circle,rgba(73,217,224,.22),transparent 70%);border:1px solid var(--glass-border);display:flex;align-items:center;justify-content:center;font-family:var(--font-mono);font-size:11px;color:var(--cyan);text-align:center;position:relative;z-index:2;letter-spacing:.05em;}
+.orbit-node{
+  position:absolute;width:132px;text-align:center;transform:translate(-50%,-50%);
+  transition:opacity .4s,transform .4s;opacity:.4;
+}
+.orbit-node.active{opacity:1;}
+.orbit-node .dot{width:14px;height:14px;border-radius:50%;background:var(--navy);border:2px solid var(--muted-2);margin:0 auto 10px;transition:all .35s;}
+.orbit-node.active .dot{border-color:var(--cyan);background:var(--cyan);box-shadow:0 0 14px var(--cyan);}
+.orbit-node .lbl{font-family:var(--font-display);font-size:14px;}
+.orbit-node .num{font-family:var(--font-mono);font-size:10px;color:var(--muted-2);}
+@media (max-width:760px){.orbit-wrap{min-height:auto;}.orbit-ring{display:none;}.orbit-static{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;width:100%;}.orbit-node{position:static;transform:none;width:auto;opacity:1;text-align:left;display:flex;gap:12px;align-items:center;}.orbit-node .dot{margin:0;}}
+.orbit-desktop{display:block;}
+@media (max-width:760px){.orbit-desktop{display:none;}}
+.orbit-mobile{display:none;}
+@media (max-width:760px){.orbit-mobile{display:block;}}
+
+/* ============ SERVICES ============ */
+.services-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;}
+@media (max-width:960px){.services-grid{grid-template-columns:repeat(2,1fr);}}
+@media (max-width:520px){.services-grid{grid-template-columns:1fr;}}
+.service-card{padding:28px 22px;border-radius:18px;background:var(--glass);border:1px solid var(--glass-border);transition:transform .3s var(--ease),border-color .3s,background .3s;}
+.service-card:hover{transform:translateY(-6px);border-color:rgba(124,110,246,.4);background:rgba(124,110,246,.05);}
+.service-icon{width:38px;height:38px;border-radius:10px;background:var(--grad-accent);margin-bottom:18px;opacity:.9;}
+.service-card h3{font-size:16.5px;margin-bottom:8px;}
+.service-card p{font-size:13.5px;color:var(--muted);}
+
+/* ============ ROI CALCULATOR ============ */
+.roi-wrap{display:grid;grid-template-columns:1fr 1fr;gap:48px;padding:40px;border-radius:24px;background:var(--glass);border:1px solid var(--glass-border);}
+@media (max-width:900px){.roi-wrap{grid-template-columns:1fr;gap:32px;padding:26px;}}
+.roi-field{margin-bottom:22px;}
+.roi-field label{display:block;font-family:var(--font-mono);font-size:11.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-bottom:10px;}
+.roi-options{display:flex;gap:8px;flex-wrap:wrap;}
+.roi-opt{
+  padding:9px 16px;font-size:13px;border-radius:100px;border:1px solid var(--glass-border);color:var(--muted);
+  transition:all .25s;
+}
+.roi-opt.selected,.roi-opt:hover{color:var(--black);background:var(--grad-accent);border-color:transparent;}
+.roi-results{display:flex;flex-direction:column;justify-content:center;gap:22px;}
+.roi-result{padding:22px;border-radius:16px;background:rgba(73,217,224,.06);border:1px solid rgba(73,217,224,.2);}
+.roi-result .n{font-family:var(--font-display);font-size:30px;font-weight:700;color:var(--white);}
+.roi-result .l{font-size:12px;color:var(--muted);margin-top:4px;}
+.roi-wrap .btn-primary{margin-top:8px;align-self:flex-start;}
+
+/* ============ TESTIMONIALS ============ */
+.tm-track{display:flex;gap:22px;overflow-x:auto;scroll-snap-type:x mandatory;padding-bottom:10px;cursor:grab;scrollbar-width:none;}
+.tm-track::-webkit-scrollbar{display:none;}
+.tm-card{
+  min-width:min(400px,85vw);scroll-snap-align:start;padding:30px;border-radius:20px;
+  background:var(--glass);border:1px solid var(--glass-border);
+}
+.tm-quote{font-size:15.5px;color:var(--white);margin-bottom:24px;line-height:1.65;}
+.tm-person{display:flex;align-items:center;gap:12px;}
+.tm-avatar{width:42px;height:42px;border-radius:50%;background:var(--grad-accent);display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-weight:700;color:var(--black);}
+.tm-name{font-size:14px;font-weight:600;}
+.tm-role{font-size:12px;color:var(--muted);}
+.tm-nav{display:flex;gap:10px;margin-top:20px;}
+.tm-nav button{width:38px;height:38px;border-radius:50%;border:1px solid var(--glass-border);display:flex;align-items:center;justify-content:center;transition:border-color .25s;}
+.tm-nav button:hover{border-color:var(--cyan);color:var(--cyan);}
+
+/* ============ CERTIFICATIONS ============ */
+.cert-row{display:flex;gap:16px;flex-wrap:wrap;}
+.cert-badge{
+  display:flex;align-items:center;gap:10px;padding:14px 20px;border-radius:100px;
+  background:var(--glass);border:1px solid var(--glass-border);transition:all .3s;
+}
+.cert-badge:hover{border-color:var(--cyan);box-shadow:0 0 20px rgba(73,217,224,.18);}
+.cert-badge .ring{width:10px;height:10px;border-radius:50%;background:var(--grad-accent);box-shadow:0 0 8px var(--cyan);}
+.cert-badge span{font-family:var(--font-mono);font-size:12.5px;}
+
+/* ============ RESUME ============ */
+.resume-card{
+  max-width:760px;margin:0 auto;padding:44px;border-radius:24px;
+  background:linear-gradient(160deg,rgba(73,217,224,.06),rgba(124,110,246,.04));
+  border:1px solid var(--glass-border);text-align:center;
+}
+.resume-card h3{font-size:24px;margin-bottom:12px;}
+.resume-card p{color:var(--muted);margin-bottom:28px;}
+.resume-links{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;}
+
+/* ============ CONTACT ============ */
+.contact-grid{display:grid;grid-template-columns:1fr 1fr;gap:60px;}
+@media (max-width:900px){.contact-grid{grid-template-columns:1fr;gap:36px;}}
+.field{margin-bottom:20px;}
+.field label{display:block;font-size:12.5px;color:var(--muted);margin-bottom:8px;font-family:var(--font-mono);letter-spacing:.04em;}
+.field input,.field select,.field textarea{
+  width:100%;padding:13px 16px;border-radius:12px;background:var(--glass);
+  border:1px solid var(--glass-border);color:var(--white);font-size:14px;transition:border-color .25s;
+}
+.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--cyan);outline:none;}
+.field textarea{resize:vertical;min-height:110px;}
+.budget-row{display:flex;gap:10px;flex-wrap:wrap;}
+.budget-row .roi-opt{flex:1;text-align:center;min-width:110px;}
+.form-success{display:none;text-align:center;padding:60px 20px;}
+.form-success.show{display:block;}
+.form-success .check{width:64px;height:64px;border-radius:50%;background:var(--grad-accent);display:flex;align-items:center;justify-content:center;margin:0 auto 20px;font-size:28px;color:var(--black);animation:pop .5s var(--ease);}
+@keyframes pop{0%{transform:scale(0);}70%{transform:scale(1.15);}100%{transform:scale(1);}}
+.contact-copy{max-width:420px;}
+.contact-copy p{color:var(--muted);margin-top:14px;}
+
+/* ============ FINAL CTA ============ */
+.final-cta{text-align:center;padding:180px 0;position:relative;overflow:hidden;background:radial-gradient(ellipse at 50% 50%,rgba(124,110,246,.14),transparent 65%);}
+.final-cta h2{font-size:clamp(30px,5vw,52px);max-width:760px;margin:0 auto 20px;}
+.final-cta p{color:var(--muted);max-width:520px;margin:0 auto 40px;}
+.final-particles{position:absolute;inset:0;pointer-events:none;}
+
+/* ============ FOOTER ============ */
+footer{border-top:1px solid var(--glass-border);padding:56px 0 36px;}
+.footer-top{display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:28px;margin-bottom:36px;}
+.footer-tagline{color:var(--muted);font-size:14px;margin-top:8px;}
+.footer-links{display:flex;gap:26px;flex-wrap:wrap;font-size:13.5px;color:var(--muted);}
+.footer-links a:hover{color:var(--cyan);}
+.footer-bottom{display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px;font-size:12px;color:var(--muted-2);font-family:var(--font-mono);border-top:1px solid var(--glass-border);padding-top:24px;}
+
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0);}
+</style>
+</head>
+<body>
+
+<div class="cursor-dot" aria-hidden="true"></div>
+<div class="cursor-ring" aria-hidden="true"></div>
+
+<a class="sr-only" href="#main">Skip to main content</a>
+
+<!-- NAV -->
+<header class="nav" id="nav">
+  <div class="nav-inner">
+    <a href="#home" class="logo"><span class="logo-dot"></span>DataNova</a>
+    <nav class="nav-links" aria-label="Primary">
+      <a href="#home">Home</a>
+      <a href="#projects">Projects</a>
+      <a href="#skills">Skills</a>
+      <a href="#experience">Experience</a>
+      <a href="#process">Process</a>
+      <a href="#about">About</a>
+      <a href="#contact">Contact</a>
+    </nav>
+    <a href="#contact" class="nav-cta">Let's Build Insights</a>
+  </div>
+</header>
+
+<main id="main">
+
+<!-- HERO -->
+<section class="hero" id="home" aria-label="Introduction">
+  <canvas id="sphere-canvas" aria-hidden="true"></canvas>
+  <div class="hero-content">
+    <p class="eyebrow">Business Intelligence &amp; Data Analytics</p>
+    <h1>Turning Complex Data Into <span class="grad">Powerful Business Decisions.</span></h1>
+    <p class="hero-sub">Power BI Developer &amp; Business Intelligence Specialist creating premium dashboards, automated reporting systems, and scalable analytics solutions that help organizations make smarter decisions.</p>
+    <div class="hero-ctas">
+      <a href="#projects" class="btn-primary" data-cursor="View">View My Portfolio</a>
+      <a href="#resume" class="btn-secondary" data-cursor="Get">Download Resume</a>
+    </div>
+    <p class="trust-line">Power BI &nbsp;•&nbsp; SQL &nbsp;•&nbsp; DAX &nbsp;•&nbsp; Power Query &nbsp;•&nbsp; Azure &nbsp;•&nbsp; ETL &nbsp;•&nbsp; Analytics</p>
+  </div>
+  <div class="hero-stats" id="stats">
+    <div class="stat"><div class="stat-num" data-target="50" data-suffix="+">0</div><div class="stat-label">Dashboards Delivered</div></div>
+    <div class="stat"><div class="stat-num" data-target="3" data-suffix="+">0</div><div class="stat-label">Years Experience</div></div>
+    <div class="stat"><div class="stat-num" data-target="25" data-suffix="+">0</div><div class="stat-label">KPIs Automated</div></div>
+    <div class="stat"><div class="stat-num" data-target="98" data-suffix="%">0</div><div class="stat-label">Client Satisfaction</div></div>
+    <div class="stat"><div class="stat-num" data-target="4" data-suffix="M+">0</div><div class="stat-label">Rows Processed</div></div>
+  </div>
+  <div class="scroll-hint"><span></span>SCROLL</div>
+</section>
+
+<!-- ABOUT -->
+<section id="about" aria-labelledby="about-h">
+  <div class="container">
+    <div class="about-grid">
+      <div class="portrait reveal"><span class="portrait-mark">DN</span></div>
+      <div class="about-copy reveal">
+        <p class="eyebrow">About Me</p>
+        <h2 id="about-h">Data Behind Every Decision.</h2>
+        <p style="margin-top:18px;">I specialize in transforming raw business data into interactive Power BI dashboards, intelligent reporting systems, and scalable analytics solutions. My focus is helping organizations discover meaningful insights through clean design, robust data models, and automation.</p>
+        <div class="about-tags">
+          <span>Power BI</span><span>SQL Server</span><span>DAX</span><span>Power Query</span><span>Azure</span><span>ETL</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SKILLS -->
+<section id="skills" aria-labelledby="skills-h">
+  <div class="container">
+    <div class="section-head reveal">
+      <p class="eyebrow">Technical Expertise</p>
+      <h2 id="skills-h">Tools I use to turn data into decisions.</h2>
+      <p>Hover any card for a closer look at how each tool fits into the analytics pipeline.</p>
+    </div>
+    <div class="skills-grid" id="skills-grid"></div>
+  </div>
+</section>
+
+<!-- PROJECTS -->
+<section id="projects" aria-labelledby="projects-h">
+  <div class="container">
+    <div class="section-head reveal">
+      <p class="eyebrow">Featured Work</p>
+      <h2 id="projects-h">Featured Analytics Solutions</h2>
+      <p>Six dashboards spanning sales, supply chain, mobility, HR, finance and customer analytics.</p>
+    </div>
+    <div class="projects-grid" id="projects-grid"></div>
+  </div>
+</section>
+
+<!-- DASHBOARD LIGHTBOX -->
+<div class="dash-modal" id="dash-modal" role="dialog" aria-modal="true" aria-labelledby="dash-modal-title">
+  <div class="dash-modal-inner">
+    <div class="dash-modal-head">
+      <h3 id="dash-modal-title">Dashboard preview</h3>
+      <button class="dash-modal-close" id="dash-modal-close" aria-label="Close preview">✕</button>
+    </div>
+    <div class="dash-modal-body" id="dash-modal-body"></div>
+  </div>
+</div>
+
+<!-- DASHBOARD SHOWCASE -->
+<section aria-labelledby="showcase-h">
+  <div class="container">
+    <div class="section-head reveal" style="margin:0 auto 20px;text-align:center;">
+      <p class="eyebrow" style="justify-content:center;">Live Showcase</p>
+      <h2 id="showcase-h">Explore a dashboard, department by department.</h2>
+      <p style="margin:14px auto 0;">Switch tabs to see how the same platform adapts across teams.</p>
+    </div>
+    <div class="tabs" id="dash-tabs" role="tablist" aria-label="Dashboard department"></div>
+    <div class="laptop reveal">
+      <div class="laptop-frame">
+        <div class="laptop-screen">
+          <div class="dash-header">
+            <div class="dot-row" aria-hidden="true"><span></span><span></span><span></span></div>
+            <div class="dash-title" id="dash-title">SALES OVERVIEW</div>
+            <div class="mono" style="font-size:10px;color:var(--muted-2);">LIVE</div>
+          </div>
+          <div class="dash-body">
+            <div class="dash-kpis" id="dash-kpis"></div>
+            <div class="chart-box"><svg id="chart-bars" viewBox="0 0 300 120" preserveAspectRatio="none"></svg></div>
+            <div class="chart-box"><svg id="chart-line" viewBox="0 0 300 120" preserveAspectRatio="none"></svg></div>
+          </div>
+        </div>
+      </div>
+      <div class="laptop-base"></div>
+    </div>
+  </div>
+</section>
+
+<!-- CASE STUDY -->
+<section aria-labelledby="case-h">
+  <div class="container">
+    <div class="section-head reveal">
+      <p class="eyebrow">Featured Case Study</p>
+      <h2 id="case-h">Supply Chain Analytics Platform</h2>
+    </div>
+    <div class="case-grid">
+      <div class="reveal">
+        <div class="case-block"><h4>Challenge</h4><p>Disconnected reporting across departments left leadership without a single source of truth.</p></div>
+        <div class="case-block"><h4>Solution</h4><p>Power BI dashboards built on an automated ETL pipeline, with DAX measures, KPI tracking and drill-through analytics.</p></div>
+        <div class="case-block"><h4>Tools</h4><div class="case-tools"><span>Power BI</span><span>SQL Server</span><span>Power Query</span><span>DAX</span><span>Excel</span></div></div>
+      </div>
+      <div class="case-kpis reveal">
+        <div class="case-kpi"><div class="n" data-count="48" data-suffix="%">0%</div><div class="l">Faster reporting</div></div>
+        <div class="case-kpi"><div class="n" data-count="3.5" data-suffix="x">0x</div><div class="l">Decision making</div></div>
+        <div class="case-kpi"><div class="n" data-count="65" data-suffix="%">0%</div><div class="l">Manual work reduced</div></div>
+        <div class="case-kpi"><div class="n" data-count="99.8" data-suffix="%">0%</div><div class="l">Data accuracy</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- EXPERIENCE -->
+<section id="experience" aria-labelledby="exp-h">
+  <div class="container">
+    <div class="section-head reveal">
+      <p class="eyebrow">Professional Journey</p>
+      <h2 id="exp-h">Five stages, one growing specialty.</h2>
+    </div>
+    <div class="timeline" id="timeline">
+      <div class="tl-item"><div class="tl-year">STAGE 01</div><div class="tl-role">Data Analyst</div><p>Built the analytical foundation — writing SQL, cleaning datasets and producing the first recurring reports.</p></div>
+      <div class="tl-item"><div class="tl-year">STAGE 02</div><div class="tl-role">Power BI Developer</div><p>Moved into dashboard design — data modeling, DAX measures and visual storytelling for stakeholders.</p></div>
+      <div class="tl-item"><div class="tl-year">STAGE 03</div><div class="tl-role">Business Intelligence Specialist</div><p>Owned BI strategy end to end, aligning dashboards with business goals across departments.</p></div>
+      <div class="tl-item"><div class="tl-year">STAGE 04</div><div class="tl-role">Dashboard Automation</div><p>Automated refresh pipelines and alerting, cutting manual reporting work by more than half.</p></div>
+      <div class="tl-item"><div class="tl-role" style="margin-top:0;">Enterprise Reporting</div><div class="tl-year" style="order:2;">STAGE 05</div><p>Now delivering enterprise-scale reporting systems across Azure, Fabric and Power Platform.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- PROCESS / WORKFLOW -->
+<section id="process" aria-labelledby="process-h">
+  <div class="container">
+    <div class="section-head reveal" style="margin:0 auto 20px;text-align:center;">
+      <p class="eyebrow" style="justify-content:center;">My Workflow</p>
+      <h2 id="process-h">From Raw Data to Business Intelligence</h2>
+      <p style="margin:14px auto 0;">Scroll to watch the pipeline activate, step by step.</p>
+    </div>
+    <div class="orbit-wrap orbit-desktop" id="orbit"></div>
+    <div class="orbit-static orbit-mobile" id="orbit-mobile"></div>
+  </div>
+</section>
+
+<!-- SERVICES -->
+<section aria-labelledby="services-h">
+  <div class="container">
+    <div class="section-head reveal">
+      <p class="eyebrow">What I Can Build</p>
+      <h2 id="services-h">Services built around your data.</h2>
+    </div>
+    <div class="services-grid" id="services-grid"></div>
+  </div>
+</section>
+
+<!-- ROI CALCULATOR -->
+<section aria-labelledby="roi-h">
+  <div class="container">
+    <div class="section-head reveal">
+      <p class="eyebrow">Dashboard ROI Calculator</p>
+      <h2 id="roi-h">Estimate your project in seconds.</h2>
+    </div>
+    <div class="roi-wrap reveal">
+      <div>
+        <div class="roi-field"><label>Business Size</label><div class="roi-options" data-group="size"><button class="roi-opt selected" data-val="1">Small</button><button class="roi-opt" data-val="1.6">Medium</button><button class="roi-opt" data-val="2.4">Large</button></div></div>
+        <div class="roi-field"><label>Dashboard Type</label><div class="roi-options" data-group="type"><button class="roi-opt selected" data-val="1">Executive</button><button class="roi-opt" data-val="1.1">Sales</button><button class="roi-opt" data-val="1.15">Finance</button><button class="roi-opt" data-val="1.2">Operations</button><button class="roi-opt" data-val="1.05">HR</button></div></div>
+        <div class="roi-field"><label>Data Sources</label><div class="roi-options" data-group="sources"><button class="roi-opt selected" data-val="1">1–3</button><button class="roi-opt" data-val="1.4">4–8</button><button class="roi-opt" data-val="1.9">9+</button></div></div>
+        <div class="roi-field"><label>Automation</label><div class="roi-options" data-group="auto"><button class="roi-opt selected" data-val="1.2">Yes</button><button class="roi-opt" data-val="1">No</button></div></div>
+      </div>
+      <div class="roi-results">
+        <div class="roi-result"><div class="n" id="roi-time">2–4 weeks</div><div class="l">Estimated development time</div></div>
+        <div class="roi-result"><div class="n" id="roi-roi">210%</div><div class="l">Estimated first-year ROI</div></div>
+        <div class="roi-result"><div class="n" id="roi-saved">6 hrs / week</div><div class="l">Estimated reporting time saved</div></div>
+        <a href="#contact" class="btn-primary" data-cursor="Go">Let's Discuss Your Dashboard</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TESTIMONIALS -->
+<section aria-labelledby="tm-h">
+  <div class="container">
+    <div class="section-head reveal">
+      <p class="eyebrow">What Clients Say</p>
+      <h2 id="tm-h">Trusted across industries and time zones.</h2>
+    </div>
+    <div class="tm-track" id="tm-track" tabindex="0" aria-label="Client testimonials, scroll horizontally">
+      <div class="tm-card"><p class="tm-quote">"The executive dashboard gave our leadership team a single source of truth for the first time. Reporting that took days now takes minutes."</p><div class="tm-person"><div class="tm-avatar">R</div><div><div class="tm-name">Rachel Owens</div><div class="tm-role">VP Operations · Meridian Retail Group · USA</div></div></div></div>
+      <div class="tm-card"><p class="tm-quote">"Our supply chain visibility completely changed. The drill-through analytics let every regional manager see exactly where delays start."</p><div class="tm-person"><div class="tm-avatar">A</div><div><div class="tm-name">Arjun Malhotra</div><div class="tm-role">Head of Logistics · Yaatri Mobility · India</div></div></div></div>
+      <div class="tm-card"><p class="tm-quote">"Clean data models, thoughtful DAX, and dashboards our finance team actually enjoys opening every morning."</p><div class="tm-person"><div class="tm-avatar">S</div><div><div class="tm-name">Sofia Bergmann</div><div class="tm-role">CFO · Nordic Fintech Labs · Sweden</div></div></div></div>
+    </div>
+    <div class="tm-nav"><button id="tm-prev" aria-label="Previous testimonial">←</button><button id="tm-next" aria-label="Next testimonial">→</button></div>
+  </div>
+</section>
+
+<!-- CERTIFICATIONS -->
+<section aria-labelledby="cert-h">
+  <div class="container">
+    <div class="section-head reveal">
+      <p class="eyebrow">Certifications</p>
+      <h2 id="cert-h">Credentials behind the craft.</h2>
+    </div>
+    <div class="cert-row reveal">
+      <div class="cert-badge"><span class="ring"></span><span>PL-300</span></div>
+      <div class="cert-badge"><span class="ring"></span><span>Microsoft Fabric</span></div>
+      <div class="cert-badge"><span class="ring"></span><span>Azure Fundamentals</span></div>
+      <div class="cert-badge"><span class="ring"></span><span>SQL Server</span></div>
+      <div class="cert-badge"><span class="ring"></span><span>Power Platform</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- RESUME -->
+<section id="resume" aria-labelledby="resume-h">
+  <div class="container">
+    <div class="resume-card reveal">
+      <h3 id="resume-h">Want the full picture?</h3>
+      <p>Download my resume or find me where the data people gather.</p>
+      <div class="resume-links">
+        <a href="#" class="btn-primary" data-cursor="Get">Download Resume</a>
+        <a href="#" class="btn-secondary">LinkedIn</a>
+        <a href="#" class="btn-secondary">GitHub</a>
+        <a href="#contact" class="btn-secondary">Email Me</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section id="contact" aria-labelledby="contact-h">
+  <div class="container">
+    <div class="contact-grid">
+      <div class="contact-copy reveal">
+        <p class="eyebrow">Get In Touch</p>
+        <h2 id="contact-h">Let's Build Better Decisions Together.</h2>
+        <p>Tell me about your data, your team, and what "better reporting" would actually look like. I'll reply within one business day.</p>
+      </div>
+      <div class="reveal">
+        <form id="contact-form" aria-label="Contact form">
+          <div id="form-fields">
+            <div class="field"><label for="f-name">Name</label><input id="f-name" type="text" required></div>
+            <div class="field"><label for="f-email">Email</label><input id="f-email" type="email" required></div>
+            <div class="field"><label for="f-company">Company</label><input id="f-company" type="text"></div>
+            <div class="field"><label for="f-type">Project Type</label>
+              <select id="f-type">
+                <option>Executive Dashboard</option><option>Sales Analytics</option><option>Finance Dashboard</option><option>Operations Dashboard</option><option>HR Analytics</option>
+              </select>
+            </div>
+            <div class="field"><label for="f-message">Message</label><textarea id="f-message" required></textarea></div>
+            <div class="field"><label>Budget</label>
+              <div class="budget-row" id="budget-row">
+                <button type="button" class="roi-opt selected" data-val="$2k–5k">$2k–5k</button>
+                <button type="button" class="roi-opt" data-val="$5k–10k">$5k–10k</button>
+                <button type="button" class="roi-opt" data-val="$10k–25k">$10k–25k</button>
+                <button type="button" class="roi-opt" data-val="$25k+">$25k+</button>
+              </div>
+            </div>
+            <button type="submit" class="btn-primary" data-cursor="Send" style="width:100%;justify-content:center;">Start the Conversation</button>
+          </div>
+          <div class="form-success" id="form-success">
+            <div class="check">✓</div>
+            <h3>Message sent.</h3>
+            <p class="muted">Thanks for reaching out — I'll be in touch within one business day.</p>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FINAL CTA -->
+<section class="final-cta" aria-labelledby="final-h">
+  <canvas class="final-particles" id="final-canvas" aria-hidden="true"></canvas>
+  <div class="container reveal">
+    <p class="eyebrow" style="justify-content:center;">Ready When You Are</p>
+    <h2 id="final-h">Data Has Unlimited Potential. Let's Unlock It.</h2>
+    <p>Whether you're building executive dashboards, automating reporting, or scaling enterprise analytics, let's create something extraordinary together.</p>
+    <a href="#contact" class="btn-primary" data-cursor="Go">Start the Conversation</a>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <div class="container">
+    <div class="footer-top">
+      <div>
+        <a href="#home" class="logo"><span class="logo-dot"></span>DataNova</a>
+        <p class="footer-tagline">Turning Data Into Decisions.</p>
+      </div>
+      <nav class="footer-links" aria-label="Footer">
+        <a href="#contact">hello@datanova.io</a>
+        <a href="#">LinkedIn</a>
+        <a href="#">GitHub</a>
+        <a href="#">Power BI Community</a>
+        <a href="#">Privacy Policy</a>
+      </nav>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2026 DataNova. All rights reserved.</span>
+      <span>Designed with precision. Powered by insight.</span>
+    </div>
+  </div>
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+/* ============ CUSTOM CURSOR ============ */
+(function(){
+  if (window.matchMedia('(max-width:900px)').matches) return;
+  const dot = document.querySelector('.cursor-dot');
+  const ring = document.querySelector('.cursor-ring');
+  let mx=innerWidth/2,my=innerHeight/2,rx=mx,ry=my;
+  window.addEventListener('mousemove', e=>{mx=e.clientX;my=e.clientY;dot.style.left=mx+'px';dot.style.top=my+'px';});
+  function loop(){ rx += (mx-rx)*0.18; ry += (my-ry)*0.18; ring.style.left=rx+'px'; ring.style.top=ry+'px'; requestAnimationFrame(loop); }
+  loop();
+  document.querySelectorAll('[data-cursor], .project-card, .skill-card, .service-card').forEach(el=>{
+    el.addEventListener('mouseenter', ()=>{ ring.classList.add('active'); ring.setAttribute('data-label', el.dataset.cursor || 'View'); });
+    el.addEventListener('mouseleave', ()=>{ ring.classList.remove('active'); });
+  });
+})();
+
+/* ============ NAV SCROLL ============ */
+const nav = document.getElementById('nav');
+window.addEventListener('scroll', ()=>{ nav.classList.toggle('scrolled', window.scrollY > 60); });
+
+/* ============ SCROLL REVEAL ============ */
+const revealObserver = new IntersectionObserver(entries=>{
+  entries.forEach(en=>{ if(en.isIntersecting){ en.target.classList.add('in'); } });
+},{threshold:.15});
+document.querySelectorAll('.reveal').forEach(el=>revealObserver.observe(el));
+
+/* ============ ANIMATED COUNTERS ============ */
+function animateCount(el, target, suffix, decimals){
+  const dur = reduceMotion ? 1 : 1400;
+  const start = performance.now();
+  function tick(now){
+    const p = Math.min(1,(now-start)/dur);
+    const eased = 1 - Math.pow(1-p,3);
+    const val = target*eased;
+    el.textContent = (decimals ? val.toFixed(decimals) : Math.round(val)) + suffix;
+    if(p<1) requestAnimationFrame(tick);
+  }
+  requestAnimationFrame(tick);
+}
+document.querySelectorAll('#stats .stat-num').forEach(el=>{
+  const target = parseFloat(el.dataset.target);
+  const suffix = el.dataset.suffix||'';
+  new IntersectionObserver((entries,obs)=>{
+    entries.forEach(en=>{ if(en.isIntersecting){ animateCount(el,target,suffix,0); obs.disconnect(); } });
+  },{threshold:.4}).observe(el);
+});
+document.querySelectorAll('.case-kpi .n').forEach(el=>{
+  const target = parseFloat(el.dataset.count);
+  const suffix = el.dataset.suffix||'';
+  const decimals = (el.dataset.count.includes('.')) ? 1 : 0;
+  new IntersectionObserver((entries,obs)=>{
+    entries.forEach(en=>{ if(en.isIntersecting){ animateCount(el,target,suffix,decimals); obs.disconnect(); } });
+  },{threshold:.4}).observe(el);
+});
+
+/* ============ SKILLS DATA ============ */
+const skills = [
+  ['Power BI',95,'End-to-end dashboard design, from data model to publish.'],
+  ['SQL',92,'Writing performant queries across large relational datasets.'],
+  ['DAX',90,'Time intelligence, complex measures, and calculation groups.'],
+  ['Power Query',88,'ETL transformations and repeatable data-cleaning pipelines.'],
+  ['Excel',85,'Advanced formulas, pivot modeling, and rapid prototyping.'],
+  ['Python',78,'Scripting automation and exploratory data analysis.'],
+  ['Azure',80,'Cloud data services for scalable enterprise reporting.'],
+  ['Fabric',75,'Unified analytics across lakehouse and warehouse workloads.'],
+  ['Power Apps',72,'Lightweight tools that feed data back into dashboards.'],
+  ['Power Automate',74,'Automated refresh, alerts, and approval workflows.'],
+  ['ETL',89,'Designing resilient extract-transform-load pipelines.'],
+  ['Data Modeling',93,'Star schemas built for performance and clarity.'],
+];
+const skillsGrid = document.getElementById('skills-grid');
+skills.forEach(([name,pct,desc])=>{
+  const card = document.createElement('div');
+  card.className='skill-card';
+  card.style.setProperty('--pct', pct+'%');
+  card.innerHTML = `<div class="glow"></div><div class="skill-name">${name}</div><div class="skill-bar"><span></span></div><div class="mono" style="font-size:11px;color:var(--muted-2);position:relative;z-index:1;">${pct}%</div><div class="skill-desc">${desc}</div>`;
+  skillsGrid.appendChild(card);
+  new IntersectionObserver((entries,obs)=>{entries.forEach(en=>{if(en.isIntersecting){card.classList.add('in');obs.disconnect();}})},{threshold:.3}).observe(card);
+  card.addEventListener('mousemove', e=>{
+    const r = card.getBoundingClientRect();
+    const px = (e.clientX-r.left)/r.width, py=(e.clientY-r.top)/r.height;
+    card.style.transform = `perspective(600px) rotateX(${(0.5-py)*10}deg) rotateY(${(px-0.5)*10}deg) translateY(-4px)`;
+  });
+  card.addEventListener('mouseleave', ()=>{ card.style.transform=''; });
+});
+
+/* ============ PROJECTS DATA ============ */
+// To show a real screenshot: add an "image" path, e.g. 'assets/projects/executive-sales.png'
+// (upload the file to that folder in your GitHub repo, next to index.html).
+// To show ONE live, interactive report: set live:true and embedUrl to the link you get from
+// Power BI Service -> File -> Publish to web (looks like https://app.powerbi.com/view?r=XXXXXXXX).
+const projects = [
+  {name:'Executive Sales Dashboard', industry:'Retail', stack:['Power BI','SQL','DAX'], problem:'Leadership lacked a real-time view of regional sales performance.', kpis:'Revenue, margin, YoY growth', impact:'32% faster monthly close', color:['#49D9E0','#2F6FED'],
+   image:'', live:true, embedUrl:'PASTE_YOUR_PUBLISH_TO_WEB_LINK_HERE'},
+  {name:'Supply Chain Analytics', industry:'Logistics', stack:['Power BI','Power Query','ETL'], problem:'Disconnected reporting across warehouses and carriers.', kpis:'On-time delivery, cost per shipment', impact:'65% less manual work', color:['#7C6EF6','#2F6FED'],
+   image:'assets/projects/supply-chain.png'},
+  {name:'Yaatri Ride Analytics Platform', industry:'Mobility', stack:['Power BI','Azure','SQL'], problem:'No unified view of driver utilization or ride demand.', kpis:'Utilization rate, demand heatmap', impact:'18% higher driver utilization', color:['#49D9E0','#7C6EF6'],
+   image:'assets/projects/yaatri.png'},
+  {name:'HR Workforce Dashboard', industry:'Human Resources', stack:['Power BI','DAX','Excel'], problem:'Headcount and attrition data lived in disconnected sheets.', kpis:'Attrition rate, time-to-hire', impact:'Single source of workforce truth', color:['#2F6FED','#49D9E0'],
+   image:'assets/projects/hr-workforce.png'},
+  {name:'Financial Performance Dashboard', industry:'Finance', stack:['Power BI','SQL Server','DAX'], problem:'Finance closed the books without a live variance view.', kpis:'Budget variance, cash flow', impact:'3.5x faster decision cycles', color:['#7C6EF6','#49D9E0'],
+   image:'assets/projects/financial-performance.png'},
+  {name:'Customer Insights Dashboard', industry:'E-commerce', stack:['Power BI','Power Query','Python'], problem:'Customer segments were analyzed manually, quarter by quarter.', kpis:'CLV, churn risk, segment mix', impact:'Automated weekly refresh', color:['#49D9E0','#2F6FED'],
+   image:'assets/projects/customer-insights.png'},
+];
+const projectsGrid = document.getElementById('projects-grid');
+const dashModal = document.getElementById('dash-modal');
+const dashModalBody = document.getElementById('dash-modal-body');
+const dashModalTitle = document.getElementById('dash-modal-title');
+
+function openDashModal(p){
+  dashModalTitle.textContent = p.name;
+  if(p.live && p.embedUrl && !p.embedUrl.startsWith('PASTE_')){
+    dashModalBody.innerHTML = `<iframe src="${p.embedUrl}" title="${p.name} live report" loading="lazy" allowfullscreen></iframe>`;
+  } else if(p.image){
+    dashModalBody.innerHTML = `<img src="${p.image}" alt="${p.name} full preview" onerror="this.parentElement.innerHTML='<div class=&quot;dash-modal-empty&quot;>Couldn\\'t load this screenshot yet.<span class=&quot;mono&quot;>Check that ${p.image} exists in your repo.</span></div>'">`;
+  } else {
+    dashModalBody.innerHTML = `<div class="dash-modal-empty">No preview added yet.<span class="mono">Add an image path or a Publish-to-web link for "${p.name}" in the projects array.</span></div>`;
+  }
+  dashModal.classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeDashModal(){
+  dashModal.classList.remove('open');
+  document.body.style.overflow = '';
+  dashModalBody.innerHTML = '';
+}
+document.getElementById('dash-modal-close').addEventListener('click', closeDashModal);
+dashModal.addEventListener('click', e=>{ if(e.target===dashModal) closeDashModal(); });
+window.addEventListener('keydown', e=>{ if(e.key==='Escape') closeDashModal(); });
+
+projects.forEach(p=>{
+  const card = document.createElement('article');
+  card.className='project-card reveal';
+  const bars = Array.from({length:7},()=> 20+Math.random()*70);
+  const path = bars.map((h,i)=>`<rect x="${i*40+8}" y="${100-h}" width="24" height="${h}" rx="4" fill="url(#g-${p.name.replace(/\s+/g,'')})"></rect>`).join('');
+  const mockContent = p.image
+    ? `<img src="${p.image}" alt="${p.name} dashboard preview" loading="lazy" onerror="this.replaceWith(document.getElementById('fallback-${p.name.replace(/\s+/g,'')}'))">`
+    : '';
+  card.innerHTML = `
+    <div class="project-mock">
+      ${p.live ? `<div class="live-badge"><span class="pulse"></span>Live report</div>` : ''}
+      ${mockContent}
+      <svg id="fallback-${p.name.replace(/\s+/g,'')}" viewBox="0 0 300 100" preserveAspectRatio="none" style="${p.image?'display:none;':''}">
+        <defs><linearGradient id="g-${p.name.replace(/\s+/g,'')}" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="${p.color[0]}" stop-opacity=".15"/><stop offset="1" stop-color="${p.color[1]}" stop-opacity=".9"/></linearGradient></defs>
+        ${path}
+      </svg>
+    </div>
+    <div class="project-body">
+      <div class="project-industry">${p.industry}</div>
+      <div class="project-title">${p.name}</div>
+      <div class="project-stack">${p.stack.map(s=>`<span>${s}</span>`).join('')}</div>
+      <button type="button" class="view-dash-btn">${p.live ? 'Open live dashboard' : 'View dashboard'} →</button>
+    </div>
+    <div class="project-overlay">
+      <h4>Business Problem</h4><p>${p.problem}</p>
+      <h4>Key KPIs</h4><p>${p.kpis}</p>
+      <h4>Business Impact</h4><p class="impact">${p.impact}</p>
+    </div>`;
+  card.setAttribute('data-cursor', p.live ? 'Live' : 'View');
+  card.querySelector('.view-dash-btn').addEventListener('click', ()=> openDashModal(p));
+  projectsGrid.appendChild(card);
+  revealObserver.observe(card);
+});
+
+/* ============ DASHBOARD SHOWCASE ============ */
+const dashData = {
+  Sales:{kpis:[['$4.2M','Revenue'],['+18%','YoY Growth'],['32%','Margin']], bars:[40,65,50,80,60,90,70], line:[30,40,35,55,50,70,65,80]},
+  Finance:{kpis:[['$1.1M','Net Cash'],['4.3%','Variance'],['96%','Budget Health']], bars:[55,45,60,50,75,65,58], line:[45,50,48,60,55,65,60,72]},
+  HR:{kpis:[['312','Headcount'],['6.2%','Attrition'],['21d','Time to Hire']], bars:[70,60,65,55,50,62,58], line:[60,58,55,50,52,48,45,42]},
+  Marketing:{kpis:[['2.4x','ROAS'],['18k','Leads'],['3.1%','Conversion']], bars:[35,55,45,70,60,85,75], line:[25,35,45,40,60,55,72,68]},
+  'Supply Chain':{kpis:[['94%','On-Time'],['$82','Cost/Shipment'],['1.8d','Avg Transit']], bars:[60,58,62,57,65,60,63], line:[55,58,60,57,62,60,65,63]},
+  'Customer Analytics':{kpis:[['$860','Avg CLV'],['4.1%','Churn'],['62%','Repeat Rate']], bars:[45,50,60,55,68,72,66], line:[40,45,50,48,58,62,60,68]},
+};
+const dashTabs = document.getElementById('dash-tabs');
+const dashKpis = document.getElementById('dash-kpis');
+const dashTitle = document.getElementById('dash-title');
+const barsSvg = document.getElementById('chart-bars');
+const lineSvg = document.getElementById('chart-line');
+function renderDash(tab){
+  const d = dashData[tab];
+  dashTitle.textContent = tab.toUpperCase()+' OVERVIEW';
+  dashKpis.innerHTML = d.kpis.map(([n,l])=>`<div class="kpi-mini"><div class="n">${n}</div><div class="l">${l}</div></div>`).join('');
+  const bw = 300/d.bars.length;
+  barsSvg.innerHTML = `<defs><linearGradient id="bg" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#49D9E0" stop-opacity=".2"/><stop offset="1" stop-color="#7C6EF6"/></linearGradient></defs>` +
+    d.bars.map((h,i)=>`<rect x="${i*bw+6}" y="${120-h}" width="${bw-12}" height="${h}" rx="4" fill="url(#bg)" style="transition:height .5s var(--ease), y .5s var(--ease);"></rect>`).join('');
+  const lw = 300/(d.line.length-1);
+  const pts = d.line.map((v,i)=>`${i*lw},${120-v}`).join(' ');
+  lineSvg.innerHTML = `<polyline points="${pts}" fill="none" stroke="#49D9E0" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>` +
+    d.line.map((v,i)=>`<circle cx="${i*lw}" cy="${120-v}" r="3" fill="#7C6EF6"/>`).join('');
+}
+Object.keys(dashData).forEach((tab,i)=>{
+  const btn = document.createElement('button');
+  btn.className = 'tab-btn'+(i===0?' active':'');
+  btn.textContent = tab;
+  btn.setAttribute('role','tab');
+  btn.addEventListener('click', ()=>{
+    dashTabs.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    renderDash(tab);
+  });
+  dashTabs.appendChild(btn);
+});
+renderDash('Sales');
+
+/* ============ TIMELINE ============ */
+const tlObserver = new IntersectionObserver(entries=>{
+  entries.forEach(en=>{ if(en.isIntersecting) en.target.classList.add('in'); });
+},{threshold:.4});
+document.querySelectorAll('.tl-item').forEach(el=>tlObserver.observe(el));
+
+/* ============ WORKFLOW ORBIT ============ */
+const workflowSteps = ['Discover','Collect','Clean','Model','Visualize','Optimize','Deploy','Monitor'];
+const orbit = document.getElementById('orbit');
+const orbitMobile = document.getElementById('orbit-mobile');
+orbit.innerHTML = `<div class="orbit-ring r1"></div><div class="orbit-ring r2"></div><div class="orbit-center">DATA<br>PIPELINE</div>`;
+const R = 210;
+workflowSteps.forEach((step,i)=>{
+  const angle = (i/workflowSteps.length)*Math.PI*2 - Math.PI/2;
+  const x = Math.cos(angle)*R, y = Math.sin(angle)*R;
+  const node = document.createElement('div');
+  node.className='orbit-node';
+  node.style.left = `calc(50% + ${x}px)`;
+  node.style.top = `calc(50% + ${y}px)`;
+  node.innerHTML = `<div class="dot"></div><div class="num">0${i+1}</div><div class="lbl">${step}</div>`;
+  orbit.appendChild(node);
+
+  const mnode = document.createElement('div');
+  mnode.className='orbit-node';
+  mnode.innerHTML = `<div class="dot"></div><div><div class="num">0${i+1}</div><div class="lbl">${step}</div></div>`;
+  orbitMobile.appendChild(mnode);
+});
+const orbitNodes = [...orbit.querySelectorAll('.orbit-node')];
+const orbitMobileNodes = [...orbitMobile.querySelectorAll('.orbit-node')];
+function activateOrbit(idx){
+  orbitNodes.forEach((n,i)=>n.classList.toggle('active', i<=idx));
+  orbitMobileNodes.forEach((n,i)=>n.classList.toggle('active', i<=idx));
+}
+const processSection = document.getElementById('process');
+window.addEventListener('scroll', ()=>{
+  const r = processSection.getBoundingClientRect();
+  const total = r.height - innerHeight*0.6;
+  const progress = Math.min(1,Math.max(0, (-r.top) / Math.max(total,1)));
+  activateOrbit(Math.floor(progress*workflowSteps.length));
+});
+
+/* ============ SERVICES DATA ============ */
+const services = [
+  ['Power BI Dashboards','Interactive dashboards built for daily decision-making.'],
+  ['Executive Reporting','Board-ready reporting that turns numbers into a narrative.'],
+  ['Business Intelligence Solutions','End-to-end BI strategy, from data model to delivery.'],
+  ['Dashboard Automation','Refresh schedules and alerts that remove manual steps.'],
+  ['SQL Analytics','Query design and performance tuning for large datasets.'],
+  ['Data Modeling','Star schemas built for speed, scale, and clarity.'],
+  ['Power Platform','Apps and automations that plug straight into your dashboards.'],
+  ['Azure Analytics','Cloud-scale pipelines for enterprise reporting.'],
+];
+const servicesGrid = document.getElementById('services-grid');
+services.forEach(([t,d])=>{
+  const card = document.createElement('div');
+  card.className='service-card reveal';
+  card.innerHTML = `<div class="service-icon"></div><h3>${t}</h3><p>${d}</p>`;
+  servicesGrid.appendChild(card);
+  revealObserver.observe(card);
+});
+
+/* ============ ROI CALCULATOR ============ */
+const roiGroups = {size:1, type:1, sources:1, auto:1.2};
+document.querySelectorAll('.roi-options').forEach(group=>{
+  const key = group.dataset.group;
+  group.querySelectorAll('.roi-opt').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      group.querySelectorAll('.roi-opt').forEach(b=>b.classList.remove('selected'));
+      btn.classList.add('selected');
+      roiGroups[key] = parseFloat(btn.dataset.val);
+      updateROI();
+    });
+  });
+});
+function updateROI(){
+  const factor = roiGroups.size * roiGroups.type * roiGroups.sources * roiGroups.auto;
+  const weeks = Math.max(2, Math.round(factor*2.6));
+  const roi = Math.round(140 + factor*55);
+  const saved = Math.max(3, Math.round(factor*4.2));
+  document.getElementById('roi-time').textContent = `${Math.max(2,weeks-1)}–${weeks+1} weeks`;
+  document.getElementById('roi-roi').textContent = `${roi}%`;
+  document.getElementById('roi-saved').textContent = `${saved} hrs / week`;
+}
+updateROI();
+
+/* ============ TESTIMONIAL CAROUSEL ============ */
+const tmTrack = document.getElementById('tm-track');
+document.getElementById('tm-next').addEventListener('click', ()=> tmTrack.scrollBy({left:340,behavior:'smooth'}));
+document.getElementById('tm-prev').addEventListener('click', ()=> tmTrack.scrollBy({left:-340,behavior:'smooth'}));
+(function(){
+  let isDown=false, startX, scrollLeft;
+  tmTrack.addEventListener('mousedown', e=>{isDown=true; startX=e.pageX; scrollLeft=tmTrack.scrollLeft; tmTrack.style.cursor='grabbing';});
+  window.addEventListener('mouseup', ()=>{isDown=false; tmTrack.style.cursor='grab';});
+  tmTrack.addEventListener('mousemove', e=>{ if(!isDown) return; e.preventDefault(); tmTrack.scrollLeft = scrollLeft - (e.pageX-startX); });
+})();
+
+/* ============ BUDGET SELECT ============ */
+document.querySelectorAll('#budget-row .roi-opt').forEach(btn=>{
+  btn.addEventListener('click', ()=>{ document.querySelectorAll('#budget-row .roi-opt').forEach(b=>b.classList.remove('selected')); btn.classList.add('selected'); });
+});
+
+/* ============ CONTACT FORM ============ */
+document.getElementById('contact-form').addEventListener('submit', e=>{
+  e.preventDefault();
+  document.getElementById('form-fields').style.display='none';
+  document.getElementById('form-success').classList.add('show');
+});
+
+/* ============ THREE.JS DATA SPHERE ============ */
+(function(){
+  const canvas = document.getElementById('sphere-canvas');
+  const hero = document.querySelector('.hero');
+  const renderer = new THREE.WebGLRenderer({canvas, alpha:true, antialias:true});
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio,2));
+  const scene = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera(55, hero.clientWidth/hero.clientHeight, 0.1, 100);
+  camera.position.z = 6.2;
+
+  function resize(){
+    renderer.setSize(hero.clientWidth, hero.clientHeight);
+    camera.aspect = hero.clientWidth/hero.clientHeight;
+    camera.updateProjectionMatrix();
+  }
+  resize();
+  window.addEventListener('resize', resize);
+
+  const sphereGroup = new THREE.Group();
+  scene.add(sphereGroup);
+
+  // core particle sphere
+  const count = reduceMotion ? 900 : 2600;
+  const positions = new Float32Array(count*3);
+  const colors = new Float32Array(count*3);
+  const c1 = new THREE.Color(0x49D9E0), c2 = new THREE.Color(0x7C6EF6);
+  for(let i=0;i<count;i++){
+    const phi = Math.acos(-1 + (2*i)/count);
+    const theta = Math.sqrt(count*Math.PI)*phi;
+    const r = 2.3 + (Math.random()-0.5)*0.15;
+    const x = r*Math.cos(theta)*Math.sin(phi);
+    const y = r*Math.sin(theta)*Math.sin(phi);
+    const z = r*Math.cos(phi);
+    positions[i*3]=x; positions[i*3+1]=y; positions[i*3+2]=z;
+    const mix = Math.random();
+    const col = c1.clone().lerp(c2, mix);
+    colors[i*3]=col.r; colors[i*3+1]=col.g; colors[i*3+2]=col.b;
+  }
+  const geo = new THREE.BufferGeometry();
+  geo.setAttribute('position', new THREE.BufferAttribute(positions,3));
+  geo.setAttribute('color', new THREE.BufferAttribute(colors,3));
+  const mat = new THREE.PointsMaterial({size:0.028, vertexColors:true, transparent:true, opacity:0.85, depthWrite:false, blending:THREE.AdditiveBlending});
+  const points = new THREE.Points(geo, mat);
+  sphereGroup.add(points);
+
+  // outer star drift
+  const starCount = reduceMotion ? 400 : 1000;
+  const starPos = new Float32Array(starCount*3);
+  for(let i=0;i<starCount;i++){
+    starPos[i*3]=(Math.random()-0.5)*20;
+    starPos[i*3+1]=(Math.random()-0.5)*20;
+    starPos[i*3+2]=(Math.random()-0.5)*10-2;
+  }
+  const starGeo = new THREE.BufferGeometry();
+  starGeo.setAttribute('position', new THREE.BufferAttribute(starPos,3));
+  const starMat = new THREE.PointsMaterial({size:0.012,color:0xEDEFF6,transparent:true,opacity:0.5,depthWrite:false});
+  const stars = new THREE.Points(starGeo, starMat);
+  scene.add(stars);
+
+  // flowing data lines (curved orbits)
+  const lineGroup = new THREE.Group();
+  scene.add(lineGroup);
+  const flowDots = [];
+  for(let i=0;i<5;i++){
+    const rad = 2.9 + i*0.35;
+    const tilt = (Math.random()-0.5)*1.2;
+    const curve = new THREE.EllipseCurve(0,0, rad, rad*0.55, 0, Math.PI*2, false, 0);
+    const pts = curve.getPoints(80).map(p=> new THREE.Vector3(p.x, p.y, 0));
+    const lineGeo = new THREE.BufferGeometry().setFromPoints(pts);
+    const lineMat = new THREE.LineBasicMaterial({color: i%2? 0x49D9E0:0x7C6EF6, transparent:true, opacity:0.18});
+    const line = new THREE.Line(lineGeo, lineMat);
+    line.rotation.x = Math.PI/2.4 + tilt;
+    line.rotation.z = i*0.6;
+    lineGroup.add(line);
+
+    const dotGeo = new THREE.SphereGeometry(0.035,8,8);
+    const dotMat = new THREE.MeshBasicMaterial({color:0x49D9E0});
+    const dot = new THREE.Mesh(dotGeo, dotMat);
+    line.add(dot);
+    flowDots.push({dot, curve, t:Math.random()});
+  }
+
+  scene.add(new THREE.AmbientLight(0xffffff,0.6));
+
+  let mouseX=0, mouseY=0;
+  window.addEventListener('mousemove', e=>{
+    mouseX = (e.clientX/innerWidth - 0.5);
+    mouseY = (e.clientY/innerHeight - 0.5);
+  });
+
+  const clock = new THREE.Clock();
+  function animate(){
+    requestAnimationFrame(animate);
+    const dt = clock.getDelta();
+    if(!reduceMotion){
+      sphereGroup.rotation.y += dt*0.09;
+      sphereGroup.rotation.x += (mouseY*0.4 - sphereGroup.rotation.x)*0.03;
+      sphereGroup.rotation.y += (mouseX*0.3)*0.01;
+      lineGroup.rotation.y += dt*0.04;
+      stars.rotation.y += dt*0.01;
+      flowDots.forEach(f=>{
+        f.t += dt*0.08;
+        if(f.t>1) f.t=0;
+        const p = f.curve.getPoint(f.t);
+        f.dot.position.set(p.x,p.y,0);
+      });
+    }
+    camera.position.x += (mouseX*0.6 - camera.position.x)*0.04;
+    camera.position.y += (-mouseY*0.6 - camera.position.y)*0.04;
+    camera.lookAt(0,0,0);
+    renderer.render(scene, camera);
+  }
+  animate();
+})();
+
+/* ============ FINAL CTA PARTICLES (lightweight 2D canvas) ============ */
+(function(){
+  const canvas = document.getElementById('final-canvas');
+  const ctx = canvas.getContext('2d');
+  const section = canvas.parentElement;
+  function resize(){ canvas.width = section.clientWidth; canvas.height = section.clientHeight; }
+  resize(); window.addEventListener('resize', resize);
+  const n = reduceMotion ? 20 : 70;
+  const parts = Array.from({length:n},()=>({
+    x:Math.random()*canvas.width, y:Math.random()*canvas.height,
+    r:Math.random()*1.6+0.4, vy:Math.random()*0.15+0.03, o:Math.random()*0.5+0.2
+  }));
+  function draw(){
+    requestAnimationFrame(draw);
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    parts.forEach(p=>{
+      ctx.beginPath();
+      ctx.fillStyle = `rgba(73,217,224,${p.o})`;
+      ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
+      ctx.fill();
+      if(!reduceMotion){ p.y -= p.vy; if(p.y<0) p.y = canvas.height; }
+    });
+  }
+  draw();
+})();
+</script>
+</body>
+</html>
